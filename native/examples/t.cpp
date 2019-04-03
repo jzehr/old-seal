@@ -176,7 +176,6 @@ int main()
     */
     auto context = SEALContext::Create(parms);
     print_parameters(context);
-    cout << "these are the parameters --> " << context << endl;
 
     /*
     Keys are created the same way as for the BFV scheme.

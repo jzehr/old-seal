@@ -20,6 +20,7 @@ add_executable(matrix_test matrix_test.cpp)
 
 # Import Microsoft SEAL
 find_package(SEAL 3.2.0 EXACT REQUIRED)
+set(SEAL_DEBUG 1)
 
 # Link Microsoft SEAL
 target_link_libraries(sealexamples SEAL::seal)
