@@ -198,7 +198,7 @@ int main()
 
     // Read FASTA file
     ifstream hxb2;
-    hxb2.open("./HXB2_prrt.fa");
+    hxb2.open("../examples/HXB2_prrt_temp.fa");
 
     string header;
     string sequence;
@@ -207,7 +207,6 @@ int main()
     std::vector<double> input;
 
     getline (hxb2, header);
-
     while(getline (hxb2, line)) {
         sequence += line;
     }
@@ -217,7 +216,7 @@ int main()
 
     // Read FASTA file
     ifstream ref;
-    ref.open("./ref_prrt.fa");
+    ref.open("../examples/ref_prrt_temp.fa");
 
     header.clear();
     sequence.clear();
@@ -254,6 +253,8 @@ int main()
     /*
     Get the parms_id and scale from encrypted and do the addition.
     */
+
+    // rename plain2 so that it is encrypted? not just 'plain2'
     Plaintext plain2;
     encoder.encode(input2, encrypted.parms_id(), encrypted.scale(), 
         plain2);
@@ -267,16 +268,162 @@ int main()
     encoder.decode(plain, input);
     cout << "Difference: " << endl;
 
+    // this is where we can separate what the counts mean from 'input'
     auto cnt = 0;
+    auto cntAG = 0;
+    auto cntAT = 0;
+    auto cntAC = 0;
+    auto cntGA = 0;
+    auto cntGC = 0;
+    auto cntGT = 0;
+    auto cntCG = 0;
+    auto cntCA = 0;
+    auto cntCT = 0;
+    auto cntTG = 0;
+    auto cntTA = 0;
+    auto cntTC = 0;
 
     for(auto n : input) {
-
+        //cout << "these are all the n: " << n << endl;
+        
+        // want to add switch statements hear
         if(abs(n) >= EPSILON) {
+
+            int x = n;
+            cout << "this is x: " << x << endl;
+            
+            if(x == -6)
+            {
+                cntAG++;
+                cout << " A --> G " << endl;
+            } 
+            else if(x == -5)
+            {
+                cntAG++;
+                cout << " A --> G " << endl;
+            } 
+            else if(x == -19)
+            {
+                cntAT++;
+                cout << " A --> T " << endl;
+            } 
+            else if(x == -18)
+            {
+                cntAT++;
+                cout << " A --> T " << endl;
+            } 
+            // this one is acting up //
+            else if(x == -2)
+            {
+                cntAC++; 
+                cout << " A --> C " << endl;
+            }
+            else if(x == -1)
+            {
+                cntAC++; 
+                cout << " A --> C " << endl;
+            } 
+            else if(x == 6)
+            {
+                cntGA++;
+                cout << " G --> A " << endl;
+            } 
+            else if(x == 5)
+            {
+                cntGA++;
+                cout << " G --> A " << endl;
+            } 
+            else if(x == -13)
+            {
+                cntGT++;
+                cout << " G --> T " << endl;
+            }
+            else if(x == -12)
+            {
+                cntGT++;
+                cout << " G --> T " << endl;
+            } 
+            else if(x == 4)
+            {
+                cntGC++;
+                cout << " G --> C " << endl;
+            } 
+            else if(x == 3)
+            {
+                cntGC++;
+                cout << " G --> C " << endl;
+            } 
+            else if(x == 19)
+            {
+                cntTA++;
+                cout << " T --> A " << endl;
+            } 
+            else if(x == 18)
+            {
+                cntTA++;
+                cout << " T --> A " << endl;
+            } 
+            else if(x == 13)
+            {
+                cntTG++;
+                cout << " T --> G " << endl;
+            } 
+            else if(x == 12)
+            {
+                cntTG++;
+                cout << " T --> G " << endl;
+            } 
+            else if(x == 17)
+            {
+                cntTC++;
+                cout << " T -- C " << endl;
+            } 
+            else if(x == 16)
+            {
+                cntTC++;
+                cout << " T -- C " << endl;
+            } 
+            else if(x == 2)
+            {
+                cntCA++;
+                cout << " C --> A " << endl;
+            }
+            else if(x == 1)
+            {
+                cntCA++;
+                cout << " C --> A " << endl;
+            }  
+            else if (x == -4)
+            {
+                cntCG++;
+                cout << " C --> G " << endl;
+            } 
+            else if (x == -3)
+            {
+                cntCG++;
+                cout << " C --> G " << endl;
+            } 
+            else 
+            {
+                cntCT++;
+                cout << " C --> T " << endl;
+            }
+            
             cnt++;
+            cout << "done with this number: " << x << endl;
+            cout << endl;
         }
+       
     }
 
-    cout << cnt << endl;
+    
+    auto transversions = cntAC + cntCA + cntGT + cntTG;
+    auto tansitions = cntAG + cntGA + cntCT + cntTC;
+
+
+    cout << "these are the total counts: " << cnt << endl;
+    cout << "These are all transitions: " << tansitions << endl;
+    cout << "These are all transversions: " << transversions << endl;
 
 }
 
