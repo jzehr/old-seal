@@ -23,6 +23,16 @@ using namespace std;
 using namespace seal;
 
 /*
+
+This scheme will operate on FLOATS
+
+*/
+
+
+
+
+
+/*
 Helper function: Prints the name of the example in a fancy banner.
 */
 void print_example_banner(string title)
@@ -198,232 +208,144 @@ int main()
 
     // Read FASTA file
     ifstream hxb2;
-    hxb2.open("../examples/HXB2_prrt_temp.fa");
+    hxb2.open("../examples/HXB2_prrt_multiple.fa");
 
     string header;
     string sequence;
     string line;
+    vector<pair<string, string> > sequences;
 
-    std::vector<double> input;
-
-    getline (hxb2, header);
-    while(getline (hxb2, line)) {
-        sequence += line;
+    while( getline (hxb2, line))
+    {
+        //cout << "line in the file: " << line << endl;
+        if (line.rfind(">",0)==0)
+        {
+            if (!sequence.empty()){
+                sequences.push_back(make_pair(header,sequence));
+            
+            }
+            
+            header = line;
+            sequence.clear();
+        }
+        else
+        {
+            sequence += line;
+        }
     }
 
-    std::copy(sequence.begin(), sequence.end(), std::back_inserter(input));
+    if (!sequence.empty()){
+        sequences.push_back(make_pair(header,sequence));          
+    }
+
     hxb2.close();
 
     // Read FASTA file
     ifstream ref;
-    ref.open("../examples/ref_prrt_temp.fa");
+    ref.open("../examples/ref_prrt_multiple.fa");
 
     header.clear();
     sequence.clear();
     line.clear();
 
-    std::vector<double> input2;
+    vector<pair<string, string> > sequences2;
 
-    getline (ref, header);
-
-    while(getline (ref, line)) {
-        sequence += line;
+    while( getline (ref, line))
+    {
+        //cout << "line in the file: " << line << endl;
+        if (line.rfind(">",0)==0)
+        {
+            if (!sequence.empty()){
+                sequences2.push_back(make_pair(header,sequence));
+            
+            }
+            
+            header = line;
+            sequence.clear();
+        }
+        else
+        {
+            sequence += line;
+        }
     }
 
-    std::copy(sequence.begin(), sequence.end(), std::back_inserter(input2));
+    if (!sequence.empty()){
+        sequences2.push_back(make_pair(header,sequence));          
+    }
     ref.close();
 
-    cout << "Input vector: " << endl;
-    print_vector(input);
 
-    cout << "Plaintext input2 : " << endl;
-    print_vector(input2);
+    // turning the strings into vectors for SEAL 
+    cout << endl;
+    cout << "These are sequences from the first input: " << endl;
+    vector<vector<double> > dogs;
+    for (auto const& i: sequences) {
+        //cout << i.first << endl << i.second << endl;
+        string sequence = i.second;
+        cout << "seq string --> double: " << i.second << endl;
+        vector<double> temp;
+        std::copy(sequence.begin(), sequence.end(), std::back_inserter(temp));
+        dogs.push_back(temp);
+    }
+    cout << endl;
+    
+    cout << "These are sequences from the second input: " << endl;
+    vector<vector<double> > cats;
+    for (auto const& i: sequences2) {
+        auto sequence = i.second;
+        cout << "seq string --> double: " << i.second << endl;
+        vector<double> temp;
+        std::copy(sequence.begin(), sequence.end(), std::back_inserter(temp));
+        cats.push_back(temp);
+    }
+    cout << endl;
 
-    Plaintext plain;
-    double scale = pow(2.0, 60);
-
-    encoder.encode(input, scale, plain);
-
-    /*
-    The vector is encrypted the same was as in BFV.
-    */
-    Ciphertext encrypted;
-    encryptor.encrypt(plain, encrypted);
-
-    /*
-    Get the parms_id and scale from encrypted and do the addition.
-    */
-
-    // rename plain2 so that it is encrypted? not just 'plain2'
-    Plaintext plain2;
-    encoder.encode(input2, encrypted.parms_id(), encrypted.scale(), 
+    // printing out each item in the row of rows // 
+    for (int i = 0; i<dogs.size(); i++) {
+        // this is where I will want to encrypt the vector to do stuff... // 
+        vector dog_vector = dogs[i];
+        vector cat_vector = cats[i];
+        Plaintext plain;
+        double scale = pow(2.0, 60);
+        encoder.encode(dog_vector, scale, plain);
+        Ciphertext encrypted;
+        encryptor.encrypt(plain, encrypted);
+            
+        // this is the second input row
+        Plaintext plain2;
+        encoder.encode(cat_vector, encrypted.parms_id(), encrypted.scale(), 
         plain2);
 
-    evaluator.sub_plain_inplace(encrypted, plain2); 
+        evaluator.sub_plain_inplace(encrypted, plain2); 
 
-    /*
-    Decryption and decoding should give the correct result.
-    */
-    decryptor.decrypt(encrypted, plain);
-    encoder.decode(plain, input);
-    cout << "Difference: " << endl;
+        /*
+        we want to be able to get the counts from here
+        BEFORE the ciphertext gets decrypted. 
+        */
 
-    // this is where we can separate what the counts mean from 'input'
-    auto cnt = 0;
-    auto cntAG = 0;
-    auto cntAT = 0;
-    auto cntAC = 0;
-    auto cntGA = 0;
-    auto cntGC = 0;
-    auto cntGT = 0;
-    auto cntCG = 0;
-    auto cntCA = 0;
-    auto cntCT = 0;
-    auto cntTG = 0;
-    auto cntTA = 0;
-    auto cntTC = 0;
+        // for (auto i : encrypted){
+        //     cout << "this is the encrypt: " << i << endl;
+        // }
 
-    for(auto n : input) {
+        decryptor.decrypt(encrypted, plain);
+        encoder.decode(plain, dog_vector);
+
+        auto cnt = 0;
+
+        for(auto n : dog_vector) {
         //cout << "these are all the n: " << n << endl;
-        
-        // want to add switch statements hear
-        if(abs(n) >= EPSILON) {
+        // want to add switch statements here
+            if(abs(n) >= EPSILON) {
 
-            int x = n;
-            cout << "this is x: " << x << endl;
-            
-            if(x == -6)
-            {
-                cntAG++;
-                cout << " A --> G " << endl;
-            } 
-            else if(x == -5)
-            {
-                cntAG++;
-                cout << " A --> G " << endl;
-            } 
-            else if(x == -19)
-            {
-                cntAT++;
-                cout << " A --> T " << endl;
-            } 
-            else if(x == -18)
-            {
-                cntAT++;
-                cout << " A --> T " << endl;
-            } 
-            // this one is acting up //
-            else if(x == -2)
-            {
-                cntAC++; 
-                cout << " A --> C " << endl;
+                cnt++;
             }
-            else if(x == -1)
-            {
-                cntAC++; 
-                cout << " A --> C " << endl;
-            } 
-            else if(x == 6)
-            {
-                cntGA++;
-                cout << " G --> A " << endl;
-            } 
-            else if(x == 5)
-            {
-                cntGA++;
-                cout << " G --> A " << endl;
-            } 
-            else if(x == -13)
-            {
-                cntGT++;
-                cout << " G --> T " << endl;
-            }
-            else if(x == -12)
-            {
-                cntGT++;
-                cout << " G --> T " << endl;
-            } 
-            else if(x == 4)
-            {
-                cntGC++;
-                cout << " G --> C " << endl;
-            } 
-            else if(x == 3)
-            {
-                cntGC++;
-                cout << " G --> C " << endl;
-            } 
-            else if(x == 19)
-            {
-                cntTA++;
-                cout << " T --> A " << endl;
-            } 
-            else if(x == 18)
-            {
-                cntTA++;
-                cout << " T --> A " << endl;
-            } 
-            else if(x == 13)
-            {
-                cntTG++;
-                cout << " T --> G " << endl;
-            } 
-            else if(x == 12)
-            {
-                cntTG++;
-                cout << " T --> G " << endl;
-            } 
-            else if(x == 17)
-            {
-                cntTC++;
-                cout << " T -- C " << endl;
-            } 
-            else if(x == 16)
-            {
-                cntTC++;
-                cout << " T -- C " << endl;
-            } 
-            else if(x == 2)
-            {
-                cntCA++;
-                cout << " C --> A " << endl;
-            }
-            else if(x == 1)
-            {
-                cntCA++;
-                cout << " C --> A " << endl;
-            }  
-            else if (x == -4)
-            {
-                cntCG++;
-                cout << " C --> G " << endl;
-            } 
-            else if (x == -3)
-            {
-                cntCG++;
-                cout << " C --> G " << endl;
-            } 
-            else 
-            {
-                cntCT++;
-                cout << " C --> T " << endl;
-            }
-            
-            cnt++;
-            cout << "done with this number: " << x << endl;
-            cout << endl;
         }
-       
+
+        cout << "Different Between The Two Seqs: " << cnt << endl;
+
     }
-
     
-    auto transversions = cntAC + cntCA + cntGT + cntTG;
-    auto tansitions = cntAG + cntGA + cntCT + cntTC;
-
-
-    cout << "these are the total counts: " << cnt << endl;
-    cout << "These are all transitions: " << tansitions << endl;
-    cout << "These are all transversions: " << transversions << endl;
+    cout << endl;
 
 }
 
