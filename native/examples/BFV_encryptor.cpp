@@ -19,18 +19,28 @@
 #define EPSILON 1
 
 #include "seal/seal.h"
+#include "gtest/gtest.h"
+#include "seal/ciphertext.h"
+#include "seal/context.h"
+#include "seal/keygenerator.h"
+#include "seal/encryptor.h"
+#include "seal/memorymanager.h"
+#include "seal/defaultparams.h"
 
 using namespace std;
 using namespace seal;
+using namespace seal::util;
 
 /*
 
-This scheme will operate on INTS
+This scheme will operate on INTS,
+
+The workflow is:
+1. read in a fasta
+2. encrypt line by line
+3. output each encrypted line to a file
 
 */
-
-
-
 
 
 /*
@@ -199,6 +209,9 @@ int main()
     We also set up an Encryptor, Evaluator, and Decryptor here.
     */
     Encryptor encryptor(context, public_key);
+    
+    // want to save this to be loaded into a file as well //
+
     Evaluator evaluator(context);
     Decryptor decryptor(context, secret_key);
 
@@ -290,169 +303,140 @@ int main()
 
     hxb2.close();
 
-    // Read FASTA file
-    ifstream ref;
-    ref.open("../examples/rsrc/ref_prrt_multiple.fa");
-
-    header.clear();
-    sequence.clear();
-    line.clear();
-
-    vector<pair<string, string> > sequences2;
-
-    while( getline (ref, line))
-    {
-        //cout << "line in the file: " << line << endl;
-        if (line.rfind(">",0)==0)
-        {
-            if (!sequence.empty()){
-                sequences2.push_back(make_pair(header,sequence));
-            
-            }
-            
-            header = line;
-            sequence.clear();
-        }
-        else
-        {
-            sequence += line;
-        }
-    }
-
-    if (!sequence.empty()){
-        sequences2.push_back(make_pair(header,sequence));          
-    }
-    ref.close();
 
     // turning the strings into vectors for SEAL 
     cout << endl;
     cout << "These are sequences from the first input: " << endl;
-    vector<vector<uint64_t> > dogs;
+    vector<vector<uint64_t> > site_1;
     for (auto const& i: sequences) {
         //cout << i.first << endl << i.second << endl;
         string sequence = i.second;
         cout << "seq string --> uint64_t: " << i.second << endl;
         vector<uint64_t> temp;
         std::copy(sequence.begin(), sequence.end(), std::back_inserter(temp));
-        dogs.push_back(temp);
+        site_1.push_back(temp);
     }
     cout << endl;
+
+
+    // ofstream outfile;
+    // outfile.open("test.txt");
     
-    cout << "These are sequences from the second input: " << endl;
-    vector<vector<uint64_t> > cats;
-    for (auto const& i: sequences2) {
-        auto sequence = i.second;
-        cout << "seq string --> uint64_t: " << i.second << endl;
-        vector<uint64_t> temp;
-        std::copy(sequence.begin(), sequence.end(), std::back_inserter(temp));
-        cats.push_back(temp);
-    }
+    // just like len // 
+    cout << "num of seqs --> " << site_1.size() << endl;
     cout << endl;
 
-    ofstream outfile;
-    outfile.open("test.txt");
+    for (int i = 0; i<site_1.size(); i++) {
+        cout << "test loop of seqs: " << i << endl;
+        for (int j = 0; j<site_1[i].size(); j++){
+            cout << " " << site_1[i][j];
 
-    for (int i = 0; i<dogs.size(); i++) {
+        }
+        cout << endl;
+    }   
 
-        vector dog_vector = dogs[i];
-        vector cat_vector = cats[i];
 
+    for (int i = 0; i<site_1.size(); i++) {
+        //cout << "here is a sequence: " << endl;
+        vector dog_vector = site_1[i];
+
+        /*
+        this is how you have to iterate through a vector...
+        you need to print out each index, not just a row at a time. 
+        */
+
+        // for (int j = 0; j<site_1[i].size(); j++){
+        //     cout << " " << site_1[i][j];
+
+        // }
+        cout << endl; 
+
+        //---------------------------------------------------------------------------        
+        /*
+        This is an example of the matrix being encrypted and then decrypted 
+        from start to finish
+        */
+        // Plaintext plain_matrix;
+        // batch_encoder.encode(dog_vector, plain_matrix);
+        
+        // // plaintext (input 1) becomes the encrypted matrix in this example
+        // Ciphertext encrypted_matrix_1;
+        // encryptor.encrypt(plain_matrix, encrypted_matrix_1);
+
+        // Plaintext plain_result;
+        // decryptor.decrypt(encrypted_matrix_1, plain_result);
+
+        // vector<uint64_t> result;
+        // batch_encoder.decode(plain_result, result);
+
+        // auto cnt = 0;
+
+        // for (i=0; i<=10; i++){
+        //     cout << "test 1 --> " << result[i] << endl;   
+
+        // }
+
+       //---------------------------------------------------------------------------
+
+        /*
+        This is an example of the matrix being encrypted, saved, and then decrypted 
+        from start to finish
+        */
+
+        stringstream stream;
         Plaintext plain_matrix;
         batch_encoder.encode(dog_vector, plain_matrix);
         
         // plaintext (input 1) becomes the encrypted matrix in this example
-        Ciphertext encrypted_matrix;
-        encryptor.encrypt(plain_matrix, encrypted_matrix);
+        Ciphertext encrypted_matrix_1;
+        Ciphertext encrypted_matrix_2;
 
-        cout << typeid(encrypted_matrix).name() << endl;
+        encryptor.encrypt(plain_matrix, encrypted_matrix_1);
+    
+        encrypted_matrix_1.save(stream);
+        encrypted_matrix_2.load(context, stream);
 
-
-
-        // batch encoding input 2
-
-        Plaintext plain_matrix2;
-        batch_encoder.encode(cat_vector, plain_matrix2);
-
-        /*
-        We now subtract the second (plaintext2 (input2)) matrix to the encrypted one using another 
-        new operation 
-        hxb2 - ref 
-        */
-        // need to save this as an object to iterate over so that no one can see the decrypted results 
-        cout << "Subtracting: ";
-        cout << endl;
-        evaluator.sub_plain_inplace(encrypted_matrix, plain_matrix2);
-
-         
-        // We decrypt and decompose the plaintext to recover the result as a matrix.
-                
-        
         Plaintext plain_result;
-        decryptor.decrypt(encrypted_matrix, plain_result);
+        decryptor.decrypt(encrypted_matrix_2, plain_result);
 
         vector<uint64_t> result;
         batch_encoder.decode(plain_result, result);
 
         auto cnt = 0;
 
-        for(auto n : result ) {
-        //cout << "these are all the n: " << n << endl;
- 
-            if(n != 0) {
-                //cout << n << endl;
-                cnt++;
-            }
+        for (i=0; i<=10; i++){
+            cout << "test 2 --> " << result[i] << endl;   
 
         }
 
-        cout << "Different Between The Two Seqs: " << cnt << endl;
+
+        //cout << "Different Between The Two Seqs: " << cnt << endl;
+
+        
+
+        // the encrypted matrix is a vector of long longs 
+
+        
+
+        // //fprintf(outfile, "%\n",encrypted_matrix);
+
+        // //outfile << encrypted_matrix << endl;
+        // for (i=0; i<=10; i++){
+        //     cout << encrypted_matrix[i] << endl;
+        //     //printf("%llu\n",encrypted_matrix[i]);
+        // }
+
+        // cout  << "this is a new seq" << endl;
+
+        //cout << typeid(encrypted_matrix).name() << endl;
+
 
     }
-    outfile.close();
+
+    //outfile.close();
     cout << endl;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

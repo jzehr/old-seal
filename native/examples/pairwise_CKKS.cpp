@@ -25,6 +25,7 @@ using namespace seal;
 /*
 
 This scheme will operate on FLOATS
+Only single sequence in fasta file 
 
 */
 
@@ -208,7 +209,7 @@ int main()
 
     // Read FASTA file
     ifstream hxb2;
-    hxb2.open("../examples/HXB2_prrt_single.fa");
+    hxb2.open("../examples/rsrc/HXB2_prrt_single.fa");
 
     string header;
     string sequence;
@@ -228,7 +229,7 @@ int main()
 
     // Read FASTA file
     ifstream ref;
-    ref.open("../examples/ref_prrt_single.fa");
+    ref.open("../examples/rsrc/ref_prrt_single.fa");
 
     header.clear();
     sequence.clear();

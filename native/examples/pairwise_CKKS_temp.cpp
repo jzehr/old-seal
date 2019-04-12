@@ -23,34 +23,8 @@ using namespace std;
 using namespace seal;
 
 /*
-
-This scheme will operate on FLOATS
-
+                This scheme will operate on FLOATS
 */
-
-
-
-
-
-/*
-Helper function: Prints the name of the example in a fancy banner.
-*/
-void print_example_banner(string title)
-{
-    if (!title.empty())
-    {
-        size_t title_length = title.length();
-        size_t banner_length = title_length + 2 + 2 * 10;
-        string banner_top(banner_length, '*');
-        string banner_middle = string(10, '*') + " " + title + " " + string(10, '*');
-
-        cout << endl
-            << banner_top << endl
-            << banner_middle << endl
-            << banner_top << endl
-            << endl;
-    }
-}
 
 /*
 Helper function: Prints the parameters in a SEALContext.
@@ -208,7 +182,7 @@ int main()
 
     // Read FASTA file
     ifstream hxb2;
-    hxb2.open("../examples/HXB2_prrt_multiple.fa");
+    hxb2.open("../examples/rsrc/Site_1_aligned.fa");
 
     string header;
     string sequence;
@@ -242,7 +216,7 @@ int main()
 
     // Read FASTA file
     ifstream ref;
-    ref.open("../examples/ref_prrt_multiple.fa");
+    ref.open("../examples/rsrc/Site_2_aligned.fa");
 
     header.clear();
     sequence.clear();
@@ -282,7 +256,7 @@ int main()
     for (auto const& i: sequences) {
         //cout << i.first << endl << i.second << endl;
         string sequence = i.second;
-        cout << "seq string --> double: " << i.second << endl;
+        //cout << "seq string --> double: " << i.second << endl;
         vector<double> temp;
         std::copy(sequence.begin(), sequence.end(), std::back_inserter(temp));
         dogs.push_back(temp);
@@ -293,7 +267,7 @@ int main()
     vector<vector<double> > cats;
     for (auto const& i: sequences2) {
         auto sequence = i.second;
-        cout << "seq string --> double: " << i.second << endl;
+        //cout << "seq string --> double: " << i.second << endl;
         vector<double> temp;
         std::copy(sequence.begin(), sequence.end(), std::back_inserter(temp));
         cats.push_back(temp);
