@@ -29,7 +29,30 @@ This scheme will operate on INTS
 
 */
 
+vector<uint64_t> one_hot(string seq)
+{
 
+		vector<uint64_t> one_hot_encoded;
+
+    std::map<char, vector <uint64_t> > one_hot_map;
+
+		one_hot_map['A'] = vector<uint64_t> {0, 0, 0, 1};
+		one_hot_map['G'] = vector<uint64_t> {0, 0, 1, 0};
+		one_hot_map['C'] = vector<uint64_t> {0, 1, 0, 0};
+		one_hot_map['T'] = vector<uint64_t> {1, 0, 0, 0};
+
+    if (!seq.empty())
+    {
+    
+        for(auto n : seq) {
+        	std::copy(one_hot_map[n].begin(), one_hot_map[n].end(), std::back_inserter(one_hot_encoded));
+        }
+
+        return one_hot_encoded;
+    }
+
+    return {};
+}
 
 
 
@@ -195,6 +218,9 @@ int main()
     auto public_key = keygen.public_key();
     auto secret_key = keygen.secret_key();
 
+    auto gal_keys = keygen.galois_keys(30);
+    auto relin_keys16 = keygen.relin_keys(16);
+
     /*
     We also set up an Encryptor, Evaluator, and Decryptor here.
     */
@@ -327,35 +353,49 @@ int main()
     // turning the strings into vectors for SEAL 
     cout << endl;
     cout << "These are sequences from the first input: " << endl;
+
     vector<vector<uint64_t> > dogs;
+
     for (auto const& i: sequences) {
         //cout << i.first << endl << i.second << endl;
-        string sequence = i.second;
-        cout << "seq string --> uint64_t: " << i.second << endl;
-        vector<uint64_t> temp;
-        std::copy(sequence.begin(), sequence.end(), std::back_inserter(temp));
-        dogs.push_back(temp);
+        auto sequence = one_hot(i.second);
+
+				cout << endl << "dog" << endl;
+				for (auto i=0; i < sequence.size(); i++) {
+					cout << sequence.at(i);
+				}
+
+        dogs.push_back(sequence);
     }
+
     cout << endl;
     
     cout << "These are sequences from the second input: " << endl;
+
     vector<vector<uint64_t> > cats;
     for (auto const& i: sequences2) {
-        auto sequence = i.second;
-        cout << "seq string --> uint64_t: " << i.second << endl;
-        vector<uint64_t> temp;
-        std::copy(sequence.begin(), sequence.end(), std::back_inserter(temp));
-        cats.push_back(temp);
+        //cout << i.first << endl << i.second << endl;
+        auto sequence = one_hot(i.second);
+
+				cout << endl << "cat" << endl;
+				for (auto i=0; i < sequence.size(); i++) {
+					cout << sequence.at(i);
+				}
+
+        cats.push_back(sequence);
     }
+
     cout << endl;
 
     ofstream outfile;
-    outfile.open("test.txt");
 
-    for (int i = 0; i<dogs.size(); i++) {
+    //for (int i = 0; i<dogs.size(); i++) {
+    for (int i = 0; i<1; i++) {
 
-        vector dog_vector = dogs[i];
-        vector cat_vector = cats[i];
+        auto dog_vector = dogs[i];
+        auto cat_vector = cats[i];
+
+				auto dog_size = dog_vector.size();
 
         Plaintext plain_matrix;
         batch_encoder.encode(dog_vector, plain_matrix);
@@ -366,12 +406,15 @@ int main()
 
         cout << typeid(encrypted_matrix).name() << endl;
 
-
-
         // batch encoding input 2
 
         Plaintext plain_matrix2;
         batch_encoder.encode(cat_vector, plain_matrix2);
+
+        Ciphertext encrypted_matrix2;
+        batch_encoder.encode(cat_vector, plain_matrix2);
+        encryptor.encrypt(plain_matrix2, encrypted_matrix2);
+
 
         /*
         We now subtract the second (plaintext2 (input2)) matrix to the encrypted one using another 
@@ -381,13 +424,25 @@ int main()
         // need to save this as an object to iterate over so that no one can see the decrypted results 
         cout << "Subtracting: ";
         cout << endl;
-        evaluator.sub_plain_inplace(encrypted_matrix, plain_matrix2);
+				// make sure the first matrix becomes the output matrix 
+				cout << encrypted_matrix.size() << endl;
+        evaluator.sub_inplace(encrypted_matrix, encrypted_matrix2);
 
-         
+				cout << encrypted_matrix.size() << endl;
+				evaluator.square_inplace(encrypted_matrix); 
         // We decrypt and decompose the plaintext to recover the result as a matrix.
+				evaluator.relinearize_inplace(encrypted_matrix, relin_keys16);
+				Ciphertext temp_enc_mat;
                 
+				cout << encrypted_matrix.size() << endl;
+
+				for(auto i=0; i < dog_size; i++) {
+						evaluator.rotate_rows(encrypted_matrix, 1, gal_keys, temp_enc_mat);
+						evaluator.add_inplace(encrypted_matrix, temp_enc_mat);
+				}
+				
         
-        Plaintext plain_result;
+				Plaintext plain_result;
         decryptor.decrypt(encrypted_matrix, plain_result);
 
         vector<uint64_t> result;
@@ -399,8 +454,7 @@ int main()
         //cout << "these are all the n: " << n << endl;
  
             if(n != 0) {
-                //cout << n << endl;
-                cnt++;
+								cout << n << endl;
             }
 
         }
@@ -412,49 +466,4 @@ int main()
     cout << endl;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -224,7 +224,7 @@ int main()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // this is the first vector to be input
-    vector<double> input{ 0.0, 10.1, 20.2, 30.3 };
+    vector<double> input{ 1, 0, 0, 1 };
     cout << "Input vector: " << endl;
     print_vector(input);
 
@@ -249,6 +249,7 @@ int main()
     The vector is encrypted the same was as in BFV.
     */
     Ciphertext encrypted;
+    Ciphertext encrypted_3;
 
     // I am flying blind, how do i print out these variable    
 
@@ -283,7 +284,7 @@ int main()
     
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
     // this is the second vector to be input 
-    vector<double> vec_diff{ 2.2, 3.3, 4.4, 5.5 };
+    vector<double> vec_diff{ 1, 1, 1, 1 };
     cout << "Plaintext difference: " << endl;
     print_vector(vec_diff);
 
@@ -296,12 +297,14 @@ int main()
     
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// this is where the in place subtraction takes place
-    evaluator.sub_plain_inplace(encrypted, plain_diff); 
+    //evaluator.multiply_plain(encrypted, plain_diff, encrypted_3); 
+
+    evaluator.rescale_to_next_inplace(encrypted_3);
 
     /*
     Decryption and decoding should give the correct result.
     */
-    decryptor.decrypt(encrypted, plain);
+    decryptor.decrypt(encrypted_3, plain);
     encoder.decode(plain, input);
     cout << "Difference: " << endl;
     print_vector(input);
@@ -316,21 +319,4 @@ int main()
     measured from a ciphertext alone. 
     */
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
