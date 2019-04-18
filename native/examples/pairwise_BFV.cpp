@@ -32,20 +32,20 @@ This scheme will operate on INTS
 vector<uint64_t> one_hot(string seq)
 {
 
-		vector<uint64_t> one_hot_encoded;
+        vector<uint64_t> one_hot_encoded;
 
     std::map<char, vector <uint64_t> > one_hot_map;
 
-		one_hot_map['A'] = vector<uint64_t> {0, 0, 0, 1};
-		one_hot_map['G'] = vector<uint64_t> {0, 0, 1, 0};
-		one_hot_map['C'] = vector<uint64_t> {0, 1, 0, 0};
-		one_hot_map['T'] = vector<uint64_t> {1, 0, 0, 0};
+        one_hot_map['A'] = vector<uint64_t> {0, 0, 0, 1};
+        one_hot_map['G'] = vector<uint64_t> {0, 0, 1, 0};
+        one_hot_map['C'] = vector<uint64_t> {0, 1, 0, 0};
+        one_hot_map['T'] = vector<uint64_t> {1, 0, 0, 0};
 
     if (!seq.empty())
     {
     
         for(auto n : seq) {
-        	std::copy(one_hot_map[n].begin(), one_hot_map[n].end(), std::back_inserter(one_hot_encoded));
+            std::copy(one_hot_map[n].begin(), one_hot_map[n].end(), std::back_inserter(one_hot_encoded));
         }
 
         return one_hot_encoded;
@@ -360,10 +360,10 @@ int main()
         //cout << i.first << endl << i.second << endl;
         auto sequence = one_hot(i.second);
 
-				cout << endl << "dog" << endl;
-				for (auto i=0; i < sequence.size(); i++) {
-					cout << sequence.at(i);
-				}
+                cout << endl << "dog" << endl;
+                for (auto i=0; i < sequence.size(); i++) {
+                    cout << sequence.at(i);
+                }
 
         dogs.push_back(sequence);
     }
@@ -377,10 +377,10 @@ int main()
         //cout << i.first << endl << i.second << endl;
         auto sequence = one_hot(i.second);
 
-				cout << endl << "cat" << endl;
-				for (auto i=0; i < sequence.size(); i++) {
-					cout << sequence.at(i);
-				}
+                cout << endl << "cat" << endl;
+                for (auto i=0; i < sequence.size(); i++) {
+                    cout << sequence.at(i);
+                }
 
         cats.push_back(sequence);
     }
@@ -395,7 +395,7 @@ int main()
         auto dog_vector = dogs[i];
         auto cat_vector = cats[i];
 
-				auto dog_size = dog_vector.size();
+                auto dog_size = dog_vector.size();
 
         Plaintext plain_matrix;
         batch_encoder.encode(dog_vector, plain_matrix);
@@ -424,25 +424,25 @@ int main()
         // need to save this as an object to iterate over so that no one can see the decrypted results 
         cout << "Subtracting: ";
         cout << endl;
-				// make sure the first matrix becomes the output matrix 
-				cout << encrypted_matrix.size() << endl;
+                // make sure the first matrix becomes the output matrix 
+                cout << encrypted_matrix.size() << endl;
         evaluator.sub_inplace(encrypted_matrix, encrypted_matrix2);
 
-				cout << encrypted_matrix.size() << endl;
-				evaluator.square_inplace(encrypted_matrix); 
+                cout << encrypted_matrix.size() << endl;
+                evaluator.square_inplace(encrypted_matrix); 
         // We decrypt and decompose the plaintext to recover the result as a matrix.
-				evaluator.relinearize_inplace(encrypted_matrix, relin_keys16);
-				Ciphertext temp_enc_mat;
+                evaluator.relinearize_inplace(encrypted_matrix, relin_keys16);
+                Ciphertext temp_enc_mat;
                 
-				cout << encrypted_matrix.size() << endl;
+                cout << encrypted_matrix.size() << endl;
 
-				for(auto i=0; i < dog_size; i++) {
-						evaluator.rotate_rows(encrypted_matrix, 1, gal_keys, temp_enc_mat);
-						evaluator.add_inplace(encrypted_matrix, temp_enc_mat);
-				}
-				
+                for(auto i=0; i < dog_size; i++) {
+                        evaluator.rotate_rows(encrypted_matrix, 1, gal_keys, temp_enc_mat);
+                        evaluator.add_inplace(encrypted_matrix, temp_enc_mat);
+                }
+                
         
-				Plaintext plain_result;
+                Plaintext plain_result;
         decryptor.decrypt(encrypted_matrix, plain_result);
 
         vector<uint64_t> result;
@@ -454,7 +454,7 @@ int main()
         //cout << "these are all the n: " << n << endl;
  
             if(n != 0) {
-								cout << n << endl;
+                                cout << n << endl;
             }
 
         }
