@@ -405,8 +405,8 @@ int main()
 
         cout << encrypted_matrix.size() << endl;
 
-        for (auto i = 0; i < dog_size; i++) {
-            evaluator.rotate_rows(encrypted_matrix, 1, gal_keys, temp_enc_mat);
+        for (auto i = 0; i < (log2(4096) - 1); i++) {
+            evaluator.rotate_rows(encrypted_matrix, -(pow(2,i)), gal_keys, temp_enc_mat);
             evaluator.add_inplace(encrypted_matrix, temp_enc_mat);
         }
 
@@ -420,13 +420,12 @@ int main()
 
         for (auto n : result) {
             // cout << "these are all the n: " << n << endl;
-
-            if (n != 0) {
-                cout << n << endl;
-            }
+            //cout << n << endl;
+            cnt++;
         }
 
-        cout << "Different Between The Two Seqs: " << cnt << endl;
+        cout << "Different Between The Two Seqs: " << result[0] << endl;
+
     }
     outfile.close();
     cout << endl;
