@@ -15,6 +15,8 @@
 #include <list>
 #include <vector>
 
+#define poly_mod 4096
+//#define poly_mod 2048
 #define EPSILON 1
 
 #include "seal/seal.h"
@@ -175,11 +177,10 @@ int main()
 
 {
     print_example_banner("Example: BFV Basics III");
-
     // Set up encryption parameters
     EncryptionParameters parms(scheme_type::BFV);
-    parms.set_poly_modulus_degree(4096);
-    parms.set_coeff_modulus(DefaultParams::coeff_modulus_128(4096));
+    parms.set_poly_modulus_degree(poly_mod);
+    parms.set_coeff_modulus(DefaultParams::coeff_modulus_128(poly_mod));
     parms.set_plain_modulus(40961);
 
     /*
@@ -321,7 +322,7 @@ int main()
 
     // turning the strings into vectors for SEAL
     cout << endl;
-    cout << "These are sequences from the first input: " << endl;
+    cout << "These are sequences from the first input: ";
 
     vector<vector<uint64_t>> dogs;
 
@@ -336,10 +337,10 @@ int main()
 
         dogs.push_back(sequence);
     }
-
+    
     cout << endl;
 
-    cout << "These are sequences from the second input: " << endl;
+    cout << endl << "These are sequences from the second input: ";
 
     vector<vector<uint64_t>> cats;
     for (auto const& i : sequences2) {
@@ -355,11 +356,16 @@ int main()
     }
 
     cout << endl;
+    cout << endl;
 
     ofstream outfile;
 
     // for (int i = 0; i<dogs.size(); i++) {
-    for (int i = 0; i < 1; i++) {
+    // ** right now this is set up to just do the first sequence comparison //
+    // !! this for loop will need to loop over EVERY sequence in the fasta. make a variable //
+    // ?? want to push back each vector (each sequence) comparison? send that to output? //
+
+    for (int i = 0; i < 3; i++) {
 
         auto dog_vector = dogs[i];
         auto cat_vector = cats[i];
@@ -369,14 +375,24 @@ int main()
         Plaintext plain_matrix;
         batch_encoder.encode(dog_vector, plain_matrix);
 
-        // plaintext (input 1) becomes the encrypted matrix in this example
+        // plaintext (input 1) becomes the `encrypted_matrix` 
         Ciphertext encrypted_matrix;
         encryptor.encrypt(plain_matrix, encrypted_matrix);
+        
+        // saving the ciphertext here //
+        
+        string s = to_string(i);
 
-        cout << typeid(encrypted_matrix).name() << endl;
+        ofstream myfile;
 
+        myfile.open("encrypted_" + s + ".txt");
+        // matrix is now saved... so how do i write this to a file now.. ? 
+        encrypted_matrix.save(myfile);
+        
+
+
+        // plaintext (input 2) becomes the `encrypted_matrix2`
         // batch encoding input 2
-
         Plaintext plain_matrix2;
         batch_encoder.encode(cat_vector, plain_matrix2);
 
@@ -388,27 +404,31 @@ int main()
         We now subtract the second (plaintext2 (input2)) matrix to the encrypted
         one using another new operation hxb2 - ref
         */
+       
         // need to save this as an object to iterate over so that no one can see
         // the decrypted results
-        cout << "Subtracting: ";
-        cout << endl;
+        cout << "Comparing seqs: " << i+1 << endl;
         // make sure the first matrix becomes the output matrix
-        cout << encrypted_matrix.size() << endl;
+        cout << "size of matrix before subtraction: " << encrypted_matrix.size() << endl;
         evaluator.sub_inplace(encrypted_matrix, encrypted_matrix2);
 
-        cout << encrypted_matrix.size() << endl;
+        cout << "size of matrix after subtraction: " << encrypted_matrix.size() << endl;
         evaluator.square_inplace(encrypted_matrix);
         // We decrypt and decompose the plaintext to recover the result as a
         // matrix.
         evaluator.relinearize_inplace(encrypted_matrix, relin_keys16);
         Ciphertext temp_enc_mat;
 
-        cout << encrypted_matrix.size() << endl;
+        cout << "size of matrix after relinerize: " << encrypted_matrix.size() << endl;
 
-        for (auto i = 0; i < (log2(4096) - 1); i++) {
+        // !! make the 4096 a variable at the top and backfill //
+        // !! push back each of these results to a vector, send vector of vectors to output file //
+        for (auto i = 0; i < (log2(poly_mod) - 1); i++) {
             evaluator.rotate_rows(encrypted_matrix, -(pow(2,i)), gal_keys, temp_enc_mat);
             evaluator.add_inplace(encrypted_matrix, temp_enc_mat);
         }
+
+
 
         Plaintext plain_result;
         decryptor.decrypt(encrypted_matrix, plain_result);
@@ -416,16 +436,17 @@ int main()
         vector<uint64_t> result;
         batch_encoder.decode(plain_result, result);
 
-        auto cnt = 0;
+        //auto cnt = 0;
 
-        for (auto n : result) {
-            // cout << "these are all the n: " << n << endl;
-            //cout << n << endl;
-            cnt++;
-        }
+        // for (auto n : result) {
+        //     // cout << "these are all the n: " << n << endl;
+        //     //cout << n << endl;
+        //     cnt++;
+        // }
 
-        cout << "Different Between The Two Seqs: " << result[0] << endl;
-
+        cout << "Different Between The Two Seqs: " << result[0]/2 << endl;
+        cout << "size of matrix: " << result.size() << endl;
+        cout << endl;
     }
     outfile.close();
     cout << endl;
