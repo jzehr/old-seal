@@ -15,8 +15,19 @@
 #include <list>
 #include <vector>
 
-#define poly_mod 4096
 //#define poly_mod 2048
+
+// #define poly_mod 4096
+// #define plain_mod_batch 40961
+
+// this one doesnt work properly
+
+#define poly_mod 8192
+#define plain_mod_batch 114689
+
+// #define poly_mod 16384
+// #define plain_mod_batch 163841
+
 #define EPSILON 1
 
 #include "seal/seal.h"

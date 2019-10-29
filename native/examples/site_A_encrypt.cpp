@@ -15,8 +15,18 @@
 #include <list>
 #include <vector>
 
-#define poly_mod 4096
 //#define poly_mod 2048
+
+// #define poly_mod 4096
+// #define plain_mod_batch 40961
+
+// this one doesnt work properly
+#define poly_mod 8192
+#define plain_mod_batch 114689
+
+// #define poly_mod 16384
+// #define plain_mod_batch 163841
+
 #define EPSILON 1
 
 #include "seal/seal.h"
@@ -62,7 +72,8 @@ int main()
     EncryptionParameters parms(scheme_type::BFV);
     parms.set_poly_modulus_degree(poly_mod);
     parms.set_coeff_modulus(DefaultParams::coeff_modulus_128(poly_mod));
-    parms.set_plain_modulus(40961);
+    //parms.set_plain_modulus(40961);
+    parms.set_plain_modulus(plain_mod_batch);
    
    // save the parms here, write to a file to then be loaded in another script //
     ofstream parm_file;

@@ -330,7 +330,7 @@ int main()
         // cout << i.first << endl << i.second << endl;
         auto sequence = one_hot(i.second);
 
-        cout << endl << "dog" << endl;
+        cout << endl << "Patient 2" << endl;
         for (auto i = 0; i < sequence.size(); i++) {
             cout << sequence.at(i);
         }
@@ -347,7 +347,7 @@ int main()
         // cout << i.first << endl << i.second << endl;
         auto sequence = one_hot(i.second);
 
-        cout << endl << "cat" << endl;
+        cout << endl << "Patient 2" << endl;
         for (auto i = 0; i < sequence.size(); i++) {
             cout << sequence.at(i);
         }
