@@ -36,6 +36,7 @@ using namespace std;
 using namespace seal;
 
 
+
 int main() {
     // Set up encryption parameters
     // read in site_A parms //
@@ -43,6 +44,7 @@ int main() {
     infile_parms_A.open("parms_A.txt");
     EncryptionParameters parms(scheme_type::BFV);
     parms = EncryptionParameters::Load(infile_parms_A);
+
 
     /*
     We create the SEALContext as usual and print the parameters.
@@ -52,6 +54,7 @@ int main() {
     /*
     We can verify that batching is indeed enabled by looking at the encryption
     parameter qualifiers created by SEALContext.
+    
     */
     auto qualifiers = context->context_data()->qualifiers();
     cout << "Batching enabled: " << boolalpha << qualifiers.using_batching
@@ -65,11 +68,13 @@ int main() {
     sk_A.open("sk_A.txt");
     SecretKey s_key;
     s_key.unsafe_load(sk_A);
+    
     /*
     We also set up a Decryptor here.
     */
     Decryptor decryptor(context, s_key);
 
+    
     /*
     Batching is done through an instance of the BatchEncoder class so need to
     construct one.

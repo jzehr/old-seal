@@ -49,6 +49,7 @@ int main()
     */
     auto context = SEALContext::Create(parms);
 
+    
     /*
     We can verify that batching is indeed enabled by looking at the encryption
     parameter qualifiers created by SEALContext.
@@ -71,6 +72,7 @@ int main()
     r_keys.unsafe_load(rk_A);
     //auto relin_keys16 = keygen.relin_keys(16);
 
+    
     /*
     We also set up an Evaluator here.
     */
@@ -88,6 +90,7 @@ int main()
     Ciphertext cipher_B;
     cipher_B.unsafe_load(in_file_B);
 
+    
     /*
      hxb2 - ref
     */
@@ -108,6 +111,7 @@ int main()
 
     // !! make the 4096 a variable at the top and backfill //
     // !! push back each of these results to a vector, send vector of vectors to output file //
+    
     for (auto i = 0; i < (log2(poly_mod) - 1); i++) {
         evaluator.rotate_rows(cipher_A, -(pow(2,i)), g_keys, temp_enc_mat);
         evaluator.add_inplace(cipher_A, temp_enc_mat);
