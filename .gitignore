@@ -1,3 +1,7 @@
+
+*.txt
+
+
 # Other stuff
 native/src/cmake/SEALConfig.cmake
 native/src/cmake/SEALConfigVersion.cmake
