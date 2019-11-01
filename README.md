@@ -1,5 +1,10 @@
 # Microsoft SEAL
 
+can run ```bash pipeline.sh``` for a quick analysis
+
+for me 
+```cmake .``` in ```native/example``` builds targets
+
 Microsoft SEAL is an easy-to-use homomorphic encryption library developed by researchers in 
 the Cryptography Research group at Microsoft Research. Microsoft SEAL is written in modern 
 standard C++ and has no external dependencies, making it easy to compile and run in many 
