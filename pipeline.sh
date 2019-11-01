@@ -12,4 +12,4 @@ printf "\n~~Comparing Sites A and B~~\n"
 ./compare_A_B
 
 printf "\n~~Results of run: \n"
-./read_in
+./read_in_hamming
