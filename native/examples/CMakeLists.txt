@@ -23,7 +23,9 @@ add_executable(BFV_encryptor BFV_encryptor.cpp)
 add_executable(site_A site_A_encrypt.cpp)
 add_executable(site_B site_B_encrypt.cpp)
 add_executable(read_in_hamming read_in_hamming.cpp)
-add_executable(compare_A_B compare_A_B.cpp)
+#add_executable(compare_A_B compare_A_B.cpp)
+add_executable(t_compare test_compare.cpp)
+
 
 # Import Microsoft SEAL
 find_package(SEAL 3.2.0 EXACT REQUIRED)
@@ -45,4 +47,5 @@ target_link_libraries(BFV_encryptor SEAL::seal)
 target_link_libraries(site_A SEAL::seal)
 target_link_libraries(site_B SEAL::seal)
 target_link_libraries(read_in_hamming SEAL::seal)
-target_link_libraries(compare_A_B SEAL::seal)
+#target_link_libraries(compare_A_B SEAL::seal)
+target_link_libraries(t_compare SEAL::seal)

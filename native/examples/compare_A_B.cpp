@@ -90,11 +90,6 @@ int main()
     Ciphertext cipher_B;
     cipher_B.unsafe_load(in_file_B);
 
-    
-    /*
-     hxb2 - ref
-    */
-    
     cout << "Comparing seqs: " << endl;
     // make sure the first matrix becomes the output matrix
     cout << "size of matrix before subtraction: " << cipher_A.size() << endl;

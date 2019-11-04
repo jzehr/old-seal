@@ -119,6 +119,9 @@ int main()
     // Read FASTA file
     ifstream ref;
     ref.open("../examples/rsrc/ref_prrt_multiple.fa");
+    
+    cout << endl;
+    cout << "READING FASTA" << endl;
 
     string header;
     string sequence;
@@ -144,29 +147,35 @@ int main()
     }
     ref.close();
 
-    cout << endl << "These are sequences from the second input: ";
+    cout << endl << "These are sequences from Site B: ";
 
-    vector<vector<uint64_t>> cats;
+    vector<vector<uint64_t>> siteB;
     for (auto const& i : sequences2) {
         // cout << i.first << endl << i.second << endl;
         auto sequence = one_hot(i.second);
 
-        cout << endl << "cat" << endl;
+        cout << endl << "Site B SEQ" << endl;
         for (auto i = 0; i < sequence.size(); i++) {
             cout << sequence.at(i);
         }
         cout << endl;
-        cats.push_back(sequence);
+        siteB.push_back(sequence);
     }
+    
+    // write a file for the lenth of siteB
+    // this will be read in to compare the two sites
+    ofstream number_of_seqs("Site_B_number_seqs.txt");
+    number_of_seqs << siteB.size();
+    number_of_seqs.close();
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < siteB.size(); i++) {
 
-        auto cat_vector = cats[i];
+        auto siteB_vector = siteB[i];
 
-        auto cat_size = cat_vector.size();
+        auto siteB_size = siteB_vector.size();
 
         Plaintext plain_matrix;
-        batch_encoder.encode(cat_vector, plain_matrix);
+        batch_encoder.encode(siteB_vector, plain_matrix);
 
         // plaintext (input 1) becomes the `encrypted_matrix` 
         Ciphertext encrypted_matrix;

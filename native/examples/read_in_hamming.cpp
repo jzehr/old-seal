@@ -81,18 +81,81 @@ int main() {
     */
     BatchEncoder batch_encoder(context);
 
-    ifstream infile_ham;
-    infile_ham.open("compared.txt");
-    Ciphertext compared_ham;
-    compared_ham.unsafe_load(infile_ham);
-            
-    Plaintext plain_result;
-    decryptor.decrypt(compared_ham, plain_result);
+    ifstream in_file_A;
+    in_file_A.open("Site_A_number_seqs.txt");
+    int num_seqs_A = 0;
+    string line;
+    while (getline(in_file_A, line)) {
+        stringstream seq_num(line);
+        seq_num >> num_seqs_A;
+    }
+    
+    line = "";
 
-    vector<uint64_t> result;
-    batch_encoder.decode(plain_result, result);
+    ifstream in_file_B;
+    in_file_B.open("Site_B_number_seqs.txt");
+    int num_seqs_B = 0;
+    while (getline(in_file_B, line)) {
+        stringstream seq_num(line);
+        seq_num >> num_seqs_B;
+    }
 
-    cout << "Different Between The Two Seqs: " << result[0]/2 << endl;
-    cout << endl;
+    for(int i = 0; i < num_seqs_A; i++){
+        for(int j = 0; j < num_seqs_B; j++){
+            if(j == i){
+                // decode //
+                string a_num_str = to_string(i);
+                string b_num_str = to_string(j);
+                string inham = "Enc_A_" + a_num_str + "_B_" + b_num_str + ".txt";
+                string outham = "HAM_A_" + a_num_str + "_B_" + b_num_str + ".txt";
+                
+                ifstream infile_ham;
+                infile_ham.open(inham);
 
+                Ciphertext compared_ham;
+                compared_ham.unsafe_load(infile_ham);
+                Plaintext plain_result;
+                decryptor.decrypt(compared_ham, plain_result);
+
+                vector<uint64_t> result;
+                batch_encoder.decode(plain_result, result);
+
+                cout << "Different Between A " << i << " and " << "B " << j << " is: " << result[0]/2 << endl;
+                cout << endl;
+
+                ofstream out(outham);
+                out << result[0]/2;
+                out.close();
+
+    
+            } else {
+                if(j > i){
+                    // decode //
+                    string a_num_str = to_string(i);
+                    string b_num_str = to_string(j);
+                    string inham = "Enc_A_" + a_num_str + "_B_" + b_num_str + ".txt";
+                    string outham = "HAM_A_" + a_num_str + "_B_" + b_num_str + ".txt";
+                
+                    ifstream infile_ham;
+                    infile_ham.open(inham);
+
+                    Ciphertext compared_ham;
+                    compared_ham.unsafe_load(infile_ham);
+                    Plaintext plain_result;
+                    decryptor.decrypt(compared_ham, plain_result);
+
+                    vector<uint64_t> result;
+                    batch_encoder.decode(plain_result, result);
+
+                    cout << "Different Between A " << i << " and " << "B " << j << " is: " << result[0]/2 << endl;
+                    cout << endl;
+                    ofstream out(outham);
+                    out << result[0]/2;
+                    out.close();
+
+
+                }
+            }
+        }
+    }
 }

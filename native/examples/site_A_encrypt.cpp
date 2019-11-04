@@ -67,7 +67,7 @@ vector<uint64_t> one_hot(string seq) {
 int main()
 
 {
-
+    
     // Set up encryption parameters
     EncryptionParameters parms(scheme_type::BFV);
     parms.set_poly_modulus_degree(poly_mod);
@@ -141,7 +141,10 @@ int main()
     // Read FASTA file
     ifstream hxb2;
     hxb2.open("../examples/rsrc/HXB2_prrt_multiple.fa");
-
+    
+    cout << endl;
+    cout << "READING FASTA" << endl;
+    
     string header;
     string sequence;
     string line;
@@ -168,29 +171,37 @@ int main()
     hxb2.close();
 
     cout << endl;
-    cout << "These are sequences from the first input: ";
+    cout << "These are sequences from Site A: ";
 
-    vector<vector<uint64_t>> dogs;
+    vector<vector<uint64_t>> siteA;
 
     for (auto const& i : sequences) {
         // cout << i.first << endl << i.second << endl;
         auto sequence = one_hot(i.second);
 
-        cout << endl << "dog" << endl;
+        cout << endl << "Site A SEQ" << endl;
         for (auto i = 0; i < sequence.size(); i++) {
             cout << sequence.at(i);
         }
         cout << endl;
-        dogs.push_back(sequence);
+        siteA.push_back(sequence);
     }
-    for (int i = 0; i < 3; i++) {
+    //for (int i = 0; i < 3; i++) {
+    
+    // write a file for the lenth of siteA 
+    // this will be read in to compare the two sites
+    ofstream number_of_seqs("Site_A_number_seqs.txt");
+    number_of_seqs << siteA.size();
+    number_of_seqs.close();
 
-        auto dog_vector = dogs[i];
+    for (int i = 0; i < siteA.size(); i++) {
 
-        auto dog_size = dog_vector.size();
+        auto siteA_vector = siteA[i];
+
+        auto siteA_size = siteA_vector.size();
 
         Plaintext plain_matrix;
-        batch_encoder.encode(dog_vector, plain_matrix);
+        batch_encoder.encode(siteA_vector, plain_matrix);
 
         // plaintext (input 1) becomes the `encrypted_matrix` 
         Ciphertext encrypted_matrix;
