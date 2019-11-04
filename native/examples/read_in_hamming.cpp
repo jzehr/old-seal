@@ -100,6 +100,7 @@ int main() {
         seq_num >> num_seqs_B;
     }
 
+    ofstream out("HAMMING_A_B.txt");
     for(int i = 0; i < num_seqs_A; i++){
         for(int j = 0; j < num_seqs_B; j++){
             if(j == i){
@@ -123,10 +124,11 @@ int main() {
                 cout << "Different Between A " << i << " and " << "B " << j << " is: " << result[0]/2 << endl;
                 cout << endl;
 
-                ofstream out(outham);
-                out << result[0]/2;
-                out.close();
+                int ans = result[0]/2;
+                string s_ans = to_string(ans);
+                string out_line = "A_" + a_num_str + "_B_" + b_num_str + ":" + s_ans + "\n";  
 
+                out << out_line;
     
             } else {
                 if(j > i){
@@ -149,13 +151,18 @@ int main() {
 
                     cout << "Different Between A " << i << " and " << "B " << j << " is: " << result[0]/2 << endl;
                     cout << endl;
-                    ofstream out(outham);
-                    out << result[0]/2;
-                    out.close();
+                    int ans = result[0]/2;
+                    string s_ans = to_string(ans);
+                    string out_line = "A_" + a_num_str + "_B_" + b_num_str + ":" + s_ans + "\n";  
 
+                    out << out_line;
 
                 }
             }
         }
     }
+    
+    out.close();
+
 }
+
