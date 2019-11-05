@@ -103,66 +103,33 @@ int main() {
     ofstream out("HAMMING_A_B.txt");
     for(int i = 0; i < num_seqs_A; i++){
         for(int j = 0; j < num_seqs_B; j++){
-            if(j == i){
-                // decode //
-                string a_num_str = to_string(i);
-                string b_num_str = to_string(j);
-                string inham = "Enc_A_" + a_num_str + "_B_" + b_num_str + ".txt";
-                string outham = "HAM_A_" + a_num_str + "_B_" + b_num_str + ".txt";
-                
-                ifstream infile_ham;
-                infile_ham.open(inham);
+            // decode //
+            string a_num_str = to_string(i);
+            string b_num_str = to_string(j);
+            string inham = "Enc_A_" + a_num_str + "_B_" + b_num_str + ".txt";
+            string outham = "HAM_A_" + a_num_str + "_B_" + b_num_str + ".txt";
+            
+            ifstream infile_ham;
+            infile_ham.open(inham);
 
-                Ciphertext compared_ham;
-                compared_ham.unsafe_load(infile_ham);
-                Plaintext plain_result;
-                decryptor.decrypt(compared_ham, plain_result);
+            Ciphertext compared_ham;
+            compared_ham.unsafe_load(infile_ham);
+            Plaintext plain_result;
+            decryptor.decrypt(compared_ham, plain_result);
 
-                vector<uint64_t> result;
-                batch_encoder.decode(plain_result, result);
+            vector<uint64_t> result;
+            batch_encoder.decode(plain_result, result);
 
-                cout << "Different Between A " << i << " and " << "B " << j << " is: " << result[0]/2 << endl;
-                cout << endl;
+            cout << "Different Between A " << i << " and " << "B " << j << " is: " << result[0]/2 << endl;
+            cout << endl;
 
-                int ans = result[0]/2;
-                string s_ans = to_string(ans);
-                string out_line = "A_" + a_num_str + "_B_" + b_num_str + ":" + s_ans + "\n";  
+            int ans = result[0]/2;
+            string s_ans = to_string(ans);
+            string out_line = "A_" + a_num_str + "_B_" + b_num_str + ":" + s_ans + "\n";  
 
-                out << out_line;
-    
-            } else {
-                if(j > i){
-                    // decode //
-                    string a_num_str = to_string(i);
-                    string b_num_str = to_string(j);
-                    string inham = "Enc_A_" + a_num_str + "_B_" + b_num_str + ".txt";
-                    string outham = "HAM_A_" + a_num_str + "_B_" + b_num_str + ".txt";
-                
-                    ifstream infile_ham;
-                    infile_ham.open(inham);
-
-                    Ciphertext compared_ham;
-                    compared_ham.unsafe_load(infile_ham);
-                    Plaintext plain_result;
-                    decryptor.decrypt(compared_ham, plain_result);
-
-                    vector<uint64_t> result;
-                    batch_encoder.decode(plain_result, result);
-
-                    cout << "Different Between A " << i << " and " << "B " << j << " is: " << result[0]/2 << endl;
-                    cout << endl;
-                    int ans = result[0]/2;
-                    string s_ans = to_string(ans);
-                    string out_line = "A_" + a_num_str + "_B_" + b_num_str + ":" + s_ans + "\n";  
-
-                    out << out_line;
-
-                }
-            }
+            out << out_line;
         }
     }
-    
     out.close();
-
 }
 

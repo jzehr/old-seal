@@ -46,10 +46,16 @@ vector<uint64_t> one_hot(string seq) {
 
     std::map<char, vector<uint64_t>> one_hot_map;
 
-    one_hot_map['A'] = vector<uint64_t>{0, 0, 0, 1};
-    one_hot_map['G'] = vector<uint64_t>{0, 0, 1, 0};
-    one_hot_map['C'] = vector<uint64_t>{0, 1, 0, 0};
-    one_hot_map['T'] = vector<uint64_t>{1, 0, 0, 0};
+    one_hot_map['A'] = vector<uint64_t>{0, 0, 0, 0, 1};
+    one_hot_map['G'] = vector<uint64_t>{0, 0, 0, 1, 0};
+    one_hot_map['C'] = vector<uint64_t>{0, 0, 1, 0, 0};
+    one_hot_map['T'] = vector<uint64_t>{0, 1, 0, 0, 0};
+    one_hot_map['-'] = vector<uint64_t>{1, 0, 0, 0, 0};
+
+    //one_hot_map['A'] = vector<uint64_t>{0, 0, 0, 1};
+    //one_hot_map['G'] = vector<uint64_t>{0, 0, 1, 0};
+    //one_hot_map['C'] = vector<uint64_t>{0, 1, 0, 0};
+    //one_hot_map['T'] = vector<uint64_t>{1, 0, 0, 0};
 
     if (!seq.empty()) {
 
@@ -147,18 +153,12 @@ int main()
     }
     ref.close();
 
-    cout << endl << "These are sequences from Site B: ";
+    cout << endl << "One Hot Encoding sequences from Site B" << endl;
 
     vector<vector<uint64_t>> siteB;
     for (auto const& i : sequences2) {
         // cout << i.first << endl << i.second << endl;
         auto sequence = one_hot(i.second);
-
-        cout << endl << "Site B SEQ" << endl;
-        for (auto i = 0; i < sequence.size(); i++) {
-            cout << sequence.at(i);
-        }
-        cout << endl;
         siteB.push_back(sequence);
     }
     

@@ -147,86 +147,45 @@ int main()
 
     for(int i = 0; i < num_seqs_A; i++){
         for(int j = 0; j < num_seqs_B; j++){
-            if(j == i){
-                // do a comparison //
-                string a_num_str = to_string(i); 
-                string b_num_str = to_string(j);
+            // do a comparison //
+            string a_num_str = to_string(i); 
+            string b_num_str = to_string(j);
 
-                string a_file = "encrypted_A_" + a_num_str + ".txt";
-                string b_file = "encrypted_B_" + b_num_str + ".txt";
-                string o_file =  "Enc_A_" + a_num_str + "_B_" + b_num_str + ".txt";
+            string a_file = "encrypted_A_" + a_num_str + ".txt";
+            string b_file = "encrypted_B_" + b_num_str + ".txt";
+            string o_file =  "Enc_A_" + a_num_str + "_B_" + b_num_str + ".txt";
 
-                //cout << "A goes to --> " << a_file << " B goes to --> " << b_file << endl;
-                
-                ifstream in_file_A;
-                ifstream in_file_B;
+            //cout << "A goes to --> " << a_file << " B goes to --> " << b_file << endl;
+            
+            ifstream in_file_A;
+            ifstream in_file_B;
 
-                in_file_A.open(a_file);
-                in_file_B.open(b_file);
+            in_file_A.open(a_file);
+            in_file_B.open(b_file);
 
-                Ciphertext cipher_A;
-                Ciphertext cipher_B;
+            Ciphertext cipher_A;
+            Ciphertext cipher_B;
 
-                cipher_A.unsafe_load(in_file_A);
-                cipher_B.unsafe_load(in_file_B);
+            cipher_A.unsafe_load(in_file_A);
+            cipher_B.unsafe_load(in_file_B);
 
-                //cout << "A goes to --> " << a_file << " B goes to --> " << b_file << endl;
-                evaluator.sub_inplace(cipher_A, cipher_B);
-                evaluator.square_inplace(cipher_A);
-                evaluator.relinearize_inplace(cipher_A, r_keys);
-                
-                Ciphertext temp_enc_mat;
-                for (auto i = 0; i < (log2(poly_mod) - 1); i++) {
-                    evaluator.rotate_rows(cipher_A, -(pow(2,i)), g_keys, temp_enc_mat);
-                    evaluator.add_inplace(cipher_A, temp_enc_mat);
-                }
-                
-                ofstream myfile;
-                myfile.open(o_file);
-                cipher_A.save(myfile);
-
-            } else {
-                if(j > i){
-                    // do a comparison //
-                    string a_num_str = to_string(i); 
-                    string b_num_str = to_string(j);
-
-                    string a_file = "encrypted_A_" + a_num_str + ".txt";
-                    string b_file = "encrypted_B_" + b_num_str + ".txt";
-                    string o_file =  "Enc_A_" + a_num_str + "_B_" + b_num_str + ".txt";
-
-                    //cout << "A goes to --> " << a_file << " B goes to --> " << b_file << endl;
-                    
-                    ifstream in_file_A;
-                    ifstream in_file_B;
-
-                    in_file_A.open(a_file);
-                    in_file_B.open(b_file);
-
-                    Ciphertext cipher_A;
-                    Ciphertext cipher_B;
-
-                    cipher_A.unsafe_load(in_file_A);
-                    cipher_B.unsafe_load(in_file_B);
-
-                    //cout << "A goes to --> " << a_file << " B goes to --> " << b_file << endl;
-                    evaluator.sub_inplace(cipher_A, cipher_B);
-                    evaluator.square_inplace(cipher_A);
-                    evaluator.relinearize_inplace(cipher_A, r_keys);
-                    
-                    Ciphertext temp_enc_mat;
-                    for (auto i = 0; i < (log2(poly_mod) - 1); i++) {
-                        evaluator.rotate_rows(cipher_A, -(pow(2,i)), g_keys, temp_enc_mat);
-                        evaluator.add_inplace(cipher_A, temp_enc_mat);
-                    }
-                    
-                    ofstream myfile;
-                    myfile.open(o_file);
-                    cipher_A.save(myfile);
-
-                }
+            //cout << "A goes to --> " << a_file << " B goes to --> " << b_file << endl;
+            evaluator.sub_inplace(cipher_A, cipher_B);
+            evaluator.square_inplace(cipher_A);
+            evaluator.relinearize_inplace(cipher_A, r_keys);
+            
+            // making changes 11/5
+            Ciphertext temp_enc_mat;
+            for (auto i = 0; i < (log2(poly_mod) - 1); i++) {
+            //for (auto i = 0; i < log2(poly_mod); i++) {
+                evaluator.rotate_rows(cipher_A, -(pow(2,i)), g_keys, temp_enc_mat);
+                evaluator.add_inplace(cipher_A, temp_enc_mat);
             }
+            
+            ofstream myfile;
+            myfile.open(o_file);
+            cipher_A.save(myfile);
+
         }
     }
-    
 }
