@@ -50,12 +50,7 @@ vector<uint64_t> one_hot(string seq) {
     one_hot_map['G'] = vector<uint64_t>{0, 0, 0, 1, 0};
     one_hot_map['C'] = vector<uint64_t>{0, 0, 1, 0, 0};
     one_hot_map['T'] = vector<uint64_t>{0, 1, 0, 0, 0};
-    one_hot_map['-'] = vector<uint64_t>{1, 0, 0, 0, 0};
-
-    //one_hot_map['A'] = vector<uint64_t>{0, 0, 0, 1};
-    //one_hot_map['G'] = vector<uint64_t>{0, 0, 1, 0};
-    //one_hot_map['C'] = vector<uint64_t>{0, 1, 0, 0};
-    //one_hot_map['T'] = vector<uint64_t>{1, 0, 0, 0};
+    one_hot_map['-'] = vector<uint64_t>{1000, 0, 0, 0, 0};
 
     if (!seq.empty()) {
 
@@ -125,6 +120,7 @@ int main()
     // Read FASTA file
     ifstream ref;
     ref.open("../examples/rsrc/ref_prrt_multiple.fa");
+    //ref.open("../examples/rsrc/clean_test.fasta");
     
     cout << endl;
     cout << "READING FASTA" << endl;

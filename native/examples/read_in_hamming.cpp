@@ -119,12 +119,16 @@ int main() {
 
             vector<uint64_t> result;
             batch_encoder.decode(plain_result, result);
-
-            cout << "Different Between A " << i << " and " << "B " << j << " is: " << result[0]/2 << endl;
-            cout << endl;
+    
 
             int ans = result[0]/2;
-            string s_ans = to_string(ans);
+            int len_of_seq = 4;
+            int real_ans = ans % len_of_seq;
+            
+            cout << "Different Between A " << i + 1 << " and " << "B " << j + 1 << " is: " << real_ans << endl;
+            cout << endl;
+
+            string s_ans = to_string(real_ans);
             string out_line = "A_" + a_num_str + "_B_" + b_num_str + ":" + s_ans + "\n";  
 
             out << out_line;
