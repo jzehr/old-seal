@@ -119,8 +119,8 @@ int main()
 
     // Read FASTA file
     ifstream ref;
-    ref.open("../examples/rsrc/ref_prrt_multiple.fa");
-    //ref.open("../examples/rsrc/clean_test.fasta");
+    //ref.open("../examples/rsrc/ref_prrt_multiple.fa");
+    ref.open("../examples/rsrc/Site_2_aligned.fa");
     
     cout << endl;
     cout << "READING FASTA" << endl;
